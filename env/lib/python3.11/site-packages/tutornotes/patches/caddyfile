@@ -1,0 +1,4 @@
+# Notes
+{{ NOTES_HOST }}{$default_site_port} {
+    import proxy "notes:8000"
+}

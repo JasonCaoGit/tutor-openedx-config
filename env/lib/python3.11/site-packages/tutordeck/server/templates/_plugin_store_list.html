@@ -1,0 +1,65 @@
+<div class="plugins-container">
+{% for plugin in plugins %}
+    <div class="plugin" hx-get="{{ url_for('plugin', name=plugin.name) }}" hx-swap="none">
+        <div class="header">
+            <div class="title">
+                <div class="name">
+                    {{ plugin.name }}
+                </div>
+                <div class="author">
+                    By {{ plugin.author }}
+                </div>
+            </div>
+        </div>
+        <div class="body">
+            <!-- TODO is that actually safe? -->
+            {{ plugin.description|safe }}
+        </div>
+        <div class="footer">
+            <div class="meta">
+                {% if plugin.is_enabled %}
+                <div class="status-enabled">
+                    Enabled
+                </div>
+                {% elif plugin.is_installed %}
+                <div class="status-disabled">
+                    Disabled
+                </div>
+                {% else %}
+                <div class="status-not-installed">
+                    Not Installed
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+<div class="pagination-container">
+    {% if pagination.previous_page or pagination.next_page %}
+    <div class="pagination">
+        {% if pagination.previous_page %}
+        <a hx-get="{{ url_for('plugin_store_list', page=pagination.previous_page)}}" hx-target="#plugins-list">
+            <div class="pagination-button">
+                <img src="{{ url_for('static', filename='/img/arrow-left.svg')}}" alt="">
+            </div>
+        </a>
+        {% endif %}
+        {% for page_number in range(1, pagination.total_pages + 1) %} 
+        <a hx-get="{{ url_for('plugin_store_list', page=page_number)}}" hx-target="#plugins-list">
+            <div class="pagination-button">
+                {{ page_number }}
+            </div>
+        </a>
+        {% endfor %}
+        {% if pagination.next_page %}
+        <a hx-get="{{ url_for('plugin_store_list', page=pagination.next_page)}}" hx-target="#plugins-list">
+            <div class="pagination-button">
+                <img src="{{ url_for('static', filename='/img/arrow-right.svg')}}" alt="">
+            </div>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

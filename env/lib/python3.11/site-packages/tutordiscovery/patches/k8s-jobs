@@ -1,0 +1,25 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: discovery-job
+  labels:
+    app.kubernetes.io/component: job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: discovery
+          image: {{ DISCOVERY_DOCKER_IMAGE }}
+          env:
+            - name: DEFAULT_PARTNER_CODE
+              value: openedx
+          volumeMounts:
+            - mountPath: /openedx/discovery/course_discovery/settings/tutor/production.py
+              name: settings
+              subPath: production.py
+      volumes:
+        - name: settings
+          configMap:
+            name: discovery-settings

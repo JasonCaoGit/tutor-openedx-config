@@ -1,0 +1,26 @@
+<div class="config">   
+    {% for key, value in config.items() %}
+        <div class="item">
+            <div>{{ key }}:</div>
+            <div class="config-forms">
+                {% if value is boolean %}
+                <input type="checkbox" name="{{ key }}" id="{{ key }}" value="{% if value %}true{% else %}false{% endif %}" {% if value %}checked{% endif %} onclick="this.value = this.checked ? 'true' : 'false'"/>
+                <!-- If checkbox is unchecked send false -->
+                <input type="hidden" name="{{ key }}" value="false">
+                {% else %}
+                <input type="text" name="{{ key }}" id="{{ key }}" value="{{ value }}" />
+                {% endif %}
+                <button 
+                    type="button" 
+                    hx-post="{{ url_for('config_update', name=plugin_name) }}"
+                    hx-vals='{"plugin_name": "{{ plugin_name }}", "unset": "{{ key }}"}'
+                    hx-indicator="#loading-bar-spinner-{{ key }}"
+                    hx-push-url="true"
+                    {% if key not in user_config %}disabled{% endif %}>
+                    unset
+                </button>
+                <img src="{{ url_for('static', filename='/img/Fading_balls.gif')}}" alt="" class="htmx-indicator" id="loading-bar-spinner-{{ key }}">
+            </div>
+        </div>
+    {% endfor %}    
+</div>

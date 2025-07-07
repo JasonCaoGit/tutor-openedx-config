@@ -1,0 +1,8 @@
+XQUEUE_INTERFACE = {
+  "django_auth": {
+    "username": "{{ XQUEUE_AUTH_USERNAME }}",
+    "password": "{{ XQUEUE_AUTH_PASSWORD }}"
+  },
+  "url": "http://xqueue:8000",
+  "callback_url": "http://lms:8000"
+}

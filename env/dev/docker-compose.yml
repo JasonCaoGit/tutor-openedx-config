@@ -1,0 +1,64 @@
+x-openedx-service:
+  &openedx-service
+  image: openedx-dev:20.0.0
+  stdin_open: true
+  tty: true
+  volumes:
+    # theme files
+    - ../build/openedx/themes:/openedx/themes
+
+services:
+  permissions:
+    environment:
+      OPENEDX_USER_ID: "501"
+
+  lms:
+    <<: *openedx-service
+    command: ./manage.py lms runserver 0.0.0.0:8000
+    environment:
+        DJANGO_SETTINGS_MODULE: lms.envs.tutor.development
+    ports:
+        - "8000:8000"
+    networks:
+      default:
+        aliases:
+          - "local.openedx.io"
+
+  cms:
+    <<: *openedx-service
+    command: ./manage.py cms runserver 0.0.0.0:8000
+    environment:
+        DJANGO_SETTINGS_MODULE: cms.envs.tutor.development
+    ports:
+        - "8001:8000"
+
+  meilisearch:
+    ports:
+      - "127.0.0.1:7700:7700"
+    networks:
+      default:
+        aliases:
+          - "meilisearch.local.openedx.io"
+
+  # Additional service for watching theme changes
+  watchthemes:
+    <<: *openedx-service
+    command: npm run watch-sass
+    restart: unless-stopped
+
+  
+
+
+
+  mfe:
+     ports:
+         - 1999:8002 # authn
+         - 2001:8002 # authoring
+         - 1997:8002 # account
+         - 1984:8002 # communications
+         - 2002:8002 # discussions
+         - 1994:8002 # gradebook
+         - 1996:8002 # learner-dashboard
+         - 2000:8002 # learning
+         - 1993:8002 # ora-grading
+         - 1995:8002 # profile

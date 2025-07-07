@@ -1,0 +1,66 @@
+# Modify users created with an incorrect email and that might clash with the newly created users
+./manage.py lms shell -c \
+  "from django.contrib.auth import get_user_model;\
+  get_user_model().objects.filter(username='discovery').exclude(email='discovery@openedx').update(email='discovery@openedx')"
+./manage.py lms shell -c \
+  "from django.contrib.auth import get_user_model;\
+  get_user_model().objects.filter(username='lms_catalog_service_user').exclude(email='lms_catalog_service_user@openedx').update(email='lms_catalog_service_user@openedx')"
+
+./manage.py lms shell -c \
+  "from openedx.core.djangoapps.programs.models import ProgramsApiConfig;\
+  ProgramsApiConfig.current().enabled or \
+  ProgramsApiConfig.objects.create(marketing_path='/programs', enabled=True)"
+
+./manage.py lms manage_user discovery discovery@openedx --staff --superuser --unusable-password
+./manage.py lms manage_user lms_catalog_service_user lms_catalog_service_user@openedx --staff --unusable-password
+
+# Development client
+./manage.py lms create_dot_application \
+    --grant-type client-credentials \
+    --redirect-uris "http://{{ DISCOVERY_HOST }}:8381/complete/edx-oauth2/" \
+    --client-id {{ DISCOVERY_OAUTH2_KEY_DEV }} \
+    --client-secret {{ DISCOVERY_OAUTH2_SECRET }} \
+    --scopes user_id \
+    --skip-authorization \
+    --update \
+    discovery-dev \
+    discovery
+./manage.py lms create_dot_application \
+    --grant-type authorization-code \
+    --redirect-uris "http://{{ DISCOVERY_HOST }}:8381/complete/edx-oauth2/" \
+    --client-id {{ DISCOVERY_OAUTH2_KEY_SSO_DEV }} \
+    --client-secret {{ DISCOVERY_OAUTH2_SECRET_SSO }} \
+    --scopes user_id \
+    --skip-authorization \
+    --update \
+    discovery-sso-dev \
+    discovery
+
+# Production client
+./manage.py lms create_dot_application \
+    --grant-type client-credentials \
+    --redirect-uris "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ DISCOVERY_HOST }}/complete/edx-oauth2/" \
+    --client-id {{ DISCOVERY_OAUTH2_KEY }} \
+    --client-secret {{ DISCOVERY_OAUTH2_SECRET }} \
+    --scopes user_id \
+    --skip-authorization \
+    --update \
+    discovery \
+    discovery
+./manage.py lms create_dot_application \
+    --grant-type authorization-code \
+    --redirect-uris "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ DISCOVERY_HOST }}/complete/edx-oauth2/" \
+    --client-id {{ DISCOVERY_OAUTH2_KEY_SSO }} \
+    --client-secret {{ DISCOVERY_OAUTH2_SECRET_SSO }} \
+    --scopes user_id \
+    --skip-authorization \
+    --update \
+    discovery-sso \
+    discovery
+
+# The COURSE_CATALOG_API_URL used to be stored in a setting, but is now a site
+# configuration -- which means that it takes different values for different
+# sites. This is important because the programs and courses returned for each
+# site will differ.
+./manage.py lms create_or_update_site_configuration {{ LMS_HOST }} --configuration '{"COURSE_CATALOG_API_URL": "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ DISCOVERY_HOST }}/api/v1"}' --enabled
+./manage.py lms create_or_update_site_configuration {{ LMS_HOST }}:8000 --configuration '{"COURSE_CATALOG_API_URL": "http://{{ DISCOVERY_HOST }}:8381/api/v1"}' --enabled

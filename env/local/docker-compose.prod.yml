@@ -1,0 +1,79 @@
+services:
+  # Web proxy for load balancing and SSL termination
+  caddy:
+    image: docker.io/caddy:2.7.4
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      
+    environment:
+      default_site_port: ":80"
+    volumes:
+      - ../apps/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      
+    
+    networks:
+      default:
+        # These aliases are for internal communication between containers when running locally
+        # with *.local.openedx.io hostnames.
+        aliases:
+          - "local.openedx.io"
+          
+    
+
+  ############# LMS and CMS workers
+  lms-worker:
+    image: docker.io/overhangio/openedx:20.0.0-indigo
+    environment:
+      SERVICE_VARIANT: lms
+      DJANGO_SETTINGS_MODULE: lms.envs.tutor.production
+    command: 
+      - "celery"
+      - "--app=lms.celery"
+      - "worker"
+      - "--loglevel=info"
+      - "--hostname=edx.lms.core.default.%h"
+      - "--queues=edx.lms.core.default,edx.lms.core.high,edx.lms.core.high_mem"
+      - "--max-tasks-per-child=100"
+      - "--prefetch-multiplier=1"
+      - "--without-gossip"
+      - "--without-mingle"
+    restart: unless-stopped
+    volumes:
+      - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+      - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+      - ../apps/openedx/config:/openedx/config:ro
+      - ../../data/lms:/openedx/data
+      - ../../data/openedx-media:/openedx/media
+      - ../../data/openedx-media-private:/openedx/media-private
+    depends_on:
+      - lms
+
+  cms-worker:
+    image: docker.io/overhangio/openedx:20.0.0-indigo
+    environment:
+      SERVICE_VARIANT: cms
+      DJANGO_SETTINGS_MODULE: cms.envs.tutor.production
+    command: 
+      - "celery"
+      - "--app=cms.celery"
+      - "worker"
+      - "--loglevel=info"
+      - "--hostname=edx.cms.core.default.%h"
+      - "--queues=edx.cms.core.default,edx.cms.core.high,edx.cms.core.low"
+      - "--max-tasks-per-child=100"
+      - "--prefetch-multiplier=1"
+      - "--without-gossip"
+      - "--without-mingle"
+    restart: unless-stopped
+    volumes:
+      - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+      - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+      - ../apps/openedx/config:/openedx/config:ro
+      - ../../data/cms:/openedx/data
+      - ../../data/openedx-media:/openedx/media
+      - ../../data/openedx-media-private:/openedx/media-private
+    depends_on:
+      - cms
+
+  

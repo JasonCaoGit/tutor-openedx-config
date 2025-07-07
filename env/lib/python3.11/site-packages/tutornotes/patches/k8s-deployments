@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes
+  labels:
+    app.kubernetes.io/name: notes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: notes
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: notes
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: notes
+          image: {{ NOTES_DOCKER_IMAGE }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SETTINGS_MODULE
+              value: notesserver.settings.tutor
+          volumeMounts:
+            - mountPath: /app/edx-notes-api/notesserver/settings/tutor.py
+              name: settings
+              subPath: tutor.py
+          securityContext:
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: settings
+          configMap:
+            name: notes-settings

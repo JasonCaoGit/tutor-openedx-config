@@ -1,0 +1,42 @@
+# Tutor provides the `tutor MODE do JOB ...` CLI as a consistent way to execute jobs
+# across the dev, local, and k8s modes. To support jobs in the docker compose modes
+# (dev and local), we must define a `-job` variant service in which jobs could be run.
+
+# When `tutor local do JOB ...` is invoked, we `docker compose run` each of JOB's
+# tasks against the appropriate `-job` services, as defined here.
+# When `tutor dev do JOB ...` is invoked, we do the same, but also include any
+# compose overrides in ../dev/docker-compose.jobs.yml.
+
+# Note that these services will all be `run` rather than `start`ed and `exec`ed.
+# This is because jobs are often used for initialization tasks, which may need to
+# happen before the service can be successfully `start`ed.
+
+services:
+
+    mysql-job:
+      image: docker.io/mysql:8.4.0
+      depends_on: ["mysql"]
+
+    lms-job:
+      image: docker.io/overhangio/openedx:20.0.0-indigo
+      environment:
+        SERVICE_VARIANT: lms
+        DJANGO_SETTINGS_MODULE: lms.envs.tutor.production
+      volumes:
+        - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+        - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+        - ../apps/openedx/config:/openedx/config:ro
+      depends_on: ["mysql", "mongodb", "meilisearch"]
+
+    cms-job:
+      image: docker.io/overhangio/openedx:20.0.0-indigo
+      environment:
+        SERVICE_VARIANT: cms
+        DJANGO_SETTINGS_MODULE: cms.envs.tutor.production
+      volumes:
+        - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+        - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+        - ../apps/openedx/config:/openedx/config:ro
+      depends_on: ["mysql", "mongodb", "meilisearch", "redis"]
+
+    

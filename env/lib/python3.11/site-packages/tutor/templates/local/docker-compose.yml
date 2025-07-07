@@ -1,0 +1,150 @@
+services:
+
+  # Set bind-mounted folder ownership
+  permissions:
+    image: {{ DOCKER_IMAGE_PERMISSIONS }}
+    restart: on-failure
+    entrypoint: []
+    command: ["sh", "/usr/local/bin/setowners.sh"]
+    environment:
+      OPENEDX_USER_ID: "1000"
+    volumes:
+      # Command script
+      - ../apps/permissions/setowners.sh:/usr/local/bin/setowners.sh:ro
+      # Bind-mounted volumes to set ownership
+      - ../../data/lms:/mounts/lms
+      - ../../data/cms:/mounts/cms
+      - ../../data/openedx-media:/mounts/openedx
+      - ../../data/openedx-media-private:/mounts/openedx-private
+      {% if RUN_MONGODB %}- ../../data/mongodb:/mounts/mongodb{% endif %}
+      {% if RUN_MYSQL %}- ../../data/mysql:/mounts/mysql{% endif %}
+      {% if RUN_MEILISEARCH %}- ../../data/meilisearch:/mounts/meilisearch{% endif %}
+      {% if RUN_REDIS %}- ../../data/redis:/mounts/redis{% endif %}
+      {{ patch("local-docker-compose-permissions-volumes")|indent(6) }}
+
+  ############# External services
+
+  {% if RUN_MONGODB -%}
+  mongodb:
+    image: {{ DOCKER_IMAGE_MONGODB }}
+    # Use WiredTiger in all environments, just like at edx.org
+    command: mongod --storageEngine wiredTiger
+    restart: unless-stopped
+    user: "999:999"
+    volumes:
+      - ../../data/mongodb:/data/db
+    depends_on:
+      - permissions
+  {%- endif %}
+
+  {% if RUN_MYSQL -%}
+  mysql:
+    image: {{ DOCKER_IMAGE_MYSQL }}
+    command: >
+      mysqld
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --binlog-expire-logs-seconds=259200
+      --mysql-native-password=ON
+    restart: unless-stopped
+    user: "999:999"
+    volumes:
+      - ../../data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "{{ MYSQL_ROOT_PASSWORD }}"
+  {%- endif %}
+
+  {% if RUN_MEILISEARCH -%}
+  meilisearch:
+    image: {{ DOCKER_IMAGE_MEILISEARCH }}
+    environment:
+      MEILI_MASTER_KEY: "{{ MEILISEARCH_MASTER_KEY }}"
+    volumes:
+      - ../../data/meilisearch:/meili_data
+    restart: unless-stopped
+    user: "1000:1000"
+    depends_on:
+      - permissions
+  {%- endif %}
+
+  {% if RUN_REDIS -%}
+  redis:
+    image: {{ DOCKER_IMAGE_REDIS }}
+    working_dir: /openedx/redis/data
+    user: "1000:1000"
+    volumes:
+      - ../apps/redis/redis.conf:/openedx/redis/config/redis.conf:ro
+      - ../../data/redis:/openedx/redis/data
+    command: redis-server /openedx/redis/config/redis.conf
+    restart: unless-stopped
+    depends_on:
+      - permissions
+  {%- endif %}
+
+  {% if RUN_SMTP -%}
+  smtp:
+    image: {{ DOCKER_IMAGE_SMTP }}
+    restart: unless-stopped
+    user: "100:101"
+    environment:
+      HOSTNAME: "{{ LMS_HOST }}"
+  {%- endif %}
+
+  ############# LMS and CMS
+
+  lms:
+    image: {{ DOCKER_IMAGE_OPENEDX }}
+    environment:
+      SERVICE_VARIANT: lms
+      DJANGO_SETTINGS_MODULE: lms.envs.tutor.production
+      UWSGI_WORKERS: {{ OPENEDX_LMS_UWSGI_WORKERS }}
+    restart: unless-stopped
+    volumes:
+      - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+      - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+      - ../apps/openedx/config:/openedx/config:ro
+      - ../apps/openedx/uwsgi.ini:/openedx/uwsgi.ini:ro
+      - ../../data/lms:/openedx/data
+      - ../../data/openedx-media:/openedx/media
+      - ../../data/openedx-media-private:/openedx/media-private
+      {%- for mount in iter_mounts(MOUNTS, "openedx", "lms") %}
+      - {{ mount }}
+      {%- endfor %}
+    depends_on:
+      - permissions
+      {% if RUN_MYSQL %}- mysql{% endif %}
+      {% if RUN_MEILISEARCH %}- meilisearch{% endif %}
+      {% if RUN_MONGODB %}- mongodb{% endif %}
+      {% if RUN_REDIS %}- redis{% endif %}
+      {% if RUN_SMTP %}- smtp{% endif %}
+      {{ patch("local-docker-compose-lms-dependencies")|indent(6) }}
+
+  cms:
+    image: {{ DOCKER_IMAGE_OPENEDX }}
+    environment:
+      SERVICE_VARIANT: cms
+      DJANGO_SETTINGS_MODULE: cms.envs.tutor.production
+      UWSGI_WORKERS: {{ OPENEDX_CMS_UWSGI_WORKERS }}
+    restart: unless-stopped
+    volumes:
+      - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+      - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+      - ../apps/openedx/config:/openedx/config:ro
+      - ../apps/openedx/uwsgi.ini:/openedx/uwsgi.ini:ro
+      - ../../data/cms:/openedx/data
+      - ../../data/openedx-media:/openedx/media
+      - ../../data/openedx-media-private:/openedx/media-private
+      {%- for mount in iter_mounts(MOUNTS, "openedx", "cms") %}
+      - {{ mount }}
+      {%- endfor %}
+    depends_on:
+      - permissions
+      - lms
+      {% if RUN_MYSQL %}- mysql{% endif %}
+      {% if RUN_MEILISEARCH %}- meilisearch{% endif %}
+      {% if RUN_MONGODB %}- mongodb{% endif %}
+      {% if RUN_REDIS %}- redis{% endif %}
+      {% if RUN_SMTP %}- smtp{% endif %}
+      {{ patch("local-docker-compose-cms-dependencies")|indent(6) }}
+
+  {{ patch("local-docker-compose-services")|indent(2) }}

@@ -1,0 +1,4 @@
+# Xqueue
+{{ XQUEUE_HOST }}{$default_site_port} {
+    import proxy "xqueue:8000"
+}

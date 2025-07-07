@@ -1,0 +1,4 @@
+# Android app
+android-app:
+    image: {{ ANDROID_APP_DOCKER_IMAGE }}
+    restart: unless-stopped

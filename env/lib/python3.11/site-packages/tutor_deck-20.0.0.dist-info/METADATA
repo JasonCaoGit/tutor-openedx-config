@@ -1,0 +1,130 @@
+Metadata-Version: 2.4
+Name: tutor-deck
+Version: 20.0.0
+Summary: Awesome administration dashboard and plugin marketplace for Tutor
+Project-URL: Homepage, https://github.com/overhangio/tutor-deck
+Project-URL: Code, https://github.com/overhangio/tutor-deck
+Project-URL: Issues, https://github.com/overhangio/tutor-deck/issues
+Author: Edly
+Author-email: hello@edly.io
+Maintainer: Muhammad Labeeb
+Maintainer-email: muhammad.labeeb@arbisoft.com
+License: AGPL-3.0-only
+License-File: LICENSE.txt
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.9
+Requires-Dist: aiofiles
+Requires-Dist: click
+Requires-Dist: click-repl
+Requires-Dist: markdown
+Requires-Dist: quart
+Requires-Dist: tutor<21.0.0,>=20.0.0
+Provides-Extra: dev
+Requires-Dist: black; extra == 'dev'
+Requires-Dist: pylint; extra == 'dev'
+Requires-Dist: tutor[dev]<21.0.0,>=20.0.0; extra == 'dev'
+Requires-Dist: types-aiofiles; extra == 'dev'
+Requires-Dist: types-markdown; extra == 'dev'
+Description-Content-Type: text/x-rst
+
+`Tutor <https://docs.tutor.edly.io>`__ Deck
+###########################################
+
+This is a plugin for `Tutor`_ that provides an administration dashboard and integrates `Plugin Marketplace`_ in an Open edX platform.
+
+
+.. _Tutor: https://docs.tutor.edly.io
+.. _Plugin Marketplace: https://edly.io/tutor/plugins-and-themes/
+
+
+Installation
+************
+
+::
+
+   tutor plugins update
+   tutor plugins install deck
+   tutor plugins enable deck
+
+Run Tutor Deck with::
+
+   tutor deck runserver
+
+And access the interface at http://127.0.0.1:3274
+
+Development
+***********
+
+Install requirements::
+
+    pip install -e .[dev]
+    npm clean-install
+
+Compile SCSS files::
+
+    make scss       # compile once
+    make scss-watch # compile and watch for changes
+
+Run a development server::
+
+    make runserver
+
+Usage
+*****
+
+Discover and install plugins from plugin marketplace:
+
+.. image:: https://github.com/overhangio/tutor-deck/raw/release/images/marketplace.png
+   :alt: Marketplace Image
+
+Browse your installed plugins:
+
+.. image:: https://github.com/overhangio/tutor-deck/raw/release/images/installed.png
+   :alt: Installed Image
+
+Enable/Disable plugin:
+
+.. image:: https://github.com/overhangio/tutor-deck/raw/release/images/android.png
+   :alt: Android Image
+
+Change plugin parameters:
+
+.. image:: https://github.com/overhangio/tutor-deck/raw/release/images/android_settings.png
+   :alt: Android Settings Image
+
+Use Developer mode for all tutor CLI commands:
+
+.. image:: https://github.com/overhangio/tutor-deck/raw/release/images/developer.png
+   :alt: Developer Image
+
+Restart platform via GUI to apply changes:
+
+.. image:: https://github.com/overhangio/tutor-deck/raw/release/images/apply.png
+   :alt: Apply Image
+
+Troubleshooting
+***************
+
+This Tutor plugin is maintained by Muhammad Labeeb from `Edly`_.
+Community support is available from the official `Open edX forum`_.
+Do you need help with this plugin? See the `troubleshooting`_
+section from the Tutor documentation.
+
+.. _Edly: https://edly.io/
+.. _Open edX forum: https://discuss.openedx.org
+.. _troubleshooting: https://docs.tutor.edly.io/troubleshooting.html
+
+License
+*******
+
+This work is licensed under the terms of the `GNU Affero General Public License (AGPL)`_.
+
+.. _GNU Affero General Public License (AGPL): https://github.com/overhangio/tutor/blob/release/LICENSE.txt

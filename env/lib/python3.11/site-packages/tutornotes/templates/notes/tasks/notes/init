@@ -1,0 +1,4 @@
+./manage.py migrate
+
+# Re-index with meilisearch
+./manage.py shell -c "from notesapi.v1.views.meilisearch import reindex; reindex()"

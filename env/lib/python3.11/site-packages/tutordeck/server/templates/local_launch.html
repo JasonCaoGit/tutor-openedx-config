@@ -1,0 +1,42 @@
+{% extends "_base_header.html" %}
+
+{% block page_title %}
+Apply changes
+{% endblock %}
+
+{% block page_description %}
+This will run Launch Platform to apply all plugin changes. This may take a few minutes to complete.
+{% endblock %}
+
+{% block page_button_top %}
+<button id="cancel-local-launch-button" hx-post="{{ url_for('cli_stop')}}" hx-trigger="click" hx-swap="none" class=" cancel-process-button" type="submit">Cancel</button>
+<button id="local-launch-button" class=" open-modal-button" type="button">Apply Changes</button>
+{% endblock %}
+
+{% block searchbar %}
+{% endblock %}
+
+{% block warning %}
+{% endblock %}
+
+
+{% set sidebar_active_tab = "local-launch" %}
+
+{% block scripts %}
+<script>
+    relevantCommands = ["tutor local launch --non-interactive"];
+    localLaunchButton = document.getElementById('local-launch-button')
+    cancelLocalLaunchButton = document.getElementById('cancel-local-launch-button') 
+    const toggleButtons = ({run = false, cancel = false} = {}) => {
+        localLaunchButton.style.display = run ? 'block' : 'none';
+        cancelLocalLaunchButton.style.display = cancel ? 'block' : 'none';
+    }
+    function ShowRunCommandButton(){
+        toggleButtons({run: true});
+    }
+    function ShowCancelCommandButton(){
+        toggleButtons({cancel: true})
+    }
+    ShowRunCommandButton();
+</script>
+{% endblock %}

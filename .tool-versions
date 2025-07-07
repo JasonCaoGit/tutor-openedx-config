@@ -1,0 +1,8 @@
+# This file tells asdf (version manager) which versions of tools to use for this project
+# asdf is a tool that helps manage multiple versions of programming languages and tools
+# 
+# Format: <tool> <version>
+# Example: python 3.11.7
+# 
+# When you run commands in this project directory, asdf will automatically use these versions
+python 3.11.7 

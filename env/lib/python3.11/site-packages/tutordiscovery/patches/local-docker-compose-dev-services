@@ -1,0 +1,26 @@
+discovery:
+  environment:
+    DJANGO_SETTINGS_MODULE: course_discovery.settings.tutor.development
+  command: ./manage.py runserver 0.0.0.0:8381
+  stdin_open: true
+  tty: true
+  volumes:
+    - ../../data/discovery/media:/openedx/discovery/course_discovery/media
+  {%- for mount in iter_mounts(MOUNTS, "discovery") %}
+    - {{ mount }}
+  {%- endfor %}
+  ports:
+    - "8381:8381"
+  networks:
+    default:
+      aliases:
+        - "{{ DISCOVERY_HOST }}"
+
+{% if DISCOVERY_RUN_ELASTICSEARCH and is_docker_rootless() %}
+  elasticsearch:
+    ulimits:
+      memlock:
+        # Fixes error setting rlimits for ready process in rootless docker
+        soft: 0  # zero means "unset" in the memlock context
+        hard: 0
+  {% endif %}

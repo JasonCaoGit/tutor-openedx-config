@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: discovery
+{% if DISCOVERY_RUN_ELASTICSEARCH %}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  labels:
+    app.kubernetes.io/name: elasticsearch
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9200
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: elasticsearch
+{% endif %}

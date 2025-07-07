@@ -1,0 +1,8 @@
+# Discovery
+{{ DISCOVERY_HOST }}{$default_site_port} {
+    request_body {
+        max_size 10MB
+    }
+
+    import proxy "discovery:8000"
+}

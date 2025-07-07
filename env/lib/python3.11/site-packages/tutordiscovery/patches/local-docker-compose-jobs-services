@@ -1,0 +1,9 @@
+discovery-job:
+  image: {{ DISCOVERY_DOCKER_IMAGE }}
+  environment:
+    DEFAULT_PARTNER_CODE: openedx
+  volumes:
+    - ../plugins/discovery/apps/settings/tutor:/openedx/discovery/course_discovery/settings/tutor:ro
+  depends_on: 
+    - lms
+    {% if RUN_MYSQL %}- mysql{% endif %}

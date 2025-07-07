@@ -1,0 +1,25 @@
+{% extends "_base_header.html" %}
+
+{% block page_title %}
+Plugin Marketplace
+{% endblock %}
+
+{% block page_description %}
+Explore, search, and install plugins to extend your Open edX platform.
+{% endblock %}
+
+{% block page_button %}
+<form action="{{ url_for('plugins_update') }}" method="POST">
+    <button class="" type="submit">Refresh</button>
+</form>
+{% endblock %}
+
+{% set sidebar_active_tab = "plugin-marketplace" %}
+
+{% set search_endpoint = url_for('plugin_store_list') %}
+
+{% block workspace_content %}
+<div id="plugins-list" class="store-plugins" hx-get="{{ search_endpoint }}" hx-trigger="load"></div>
+{% endblock %}
+
+

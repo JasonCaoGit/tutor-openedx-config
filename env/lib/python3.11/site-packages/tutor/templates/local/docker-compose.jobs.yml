@@ -1,0 +1,48 @@
+# Tutor provides the `tutor MODE do JOB ...` CLI as a consistent way to execute jobs
+# across the dev, local, and k8s modes. To support jobs in the docker compose modes
+# (dev and local), we must define a `-job` variant service in which jobs could be run.
+
+# When `tutor local do JOB ...` is invoked, we `docker compose run` each of JOB's
+# tasks against the appropriate `-job` services, as defined here.
+# When `tutor dev do JOB ...` is invoked, we do the same, but also include any
+# compose overrides in ../dev/docker-compose.jobs.yml.
+
+# Note that these services will all be `run` rather than `start`ed and `exec`ed.
+# This is because jobs are often used for initialization tasks, which may need to
+# happen before the service can be successfully `start`ed.
+
+services:
+
+    mysql-job:
+      image: {{ DOCKER_IMAGE_MYSQL }}
+      depends_on: {{ [("mysql", RUN_MYSQL)]|list_if }}
+
+    lms-job:
+      image: {{ DOCKER_IMAGE_OPENEDX }}
+      environment:
+        SERVICE_VARIANT: lms
+        DJANGO_SETTINGS_MODULE: lms.envs.tutor.production
+      volumes:
+        - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+        - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+        - ../apps/openedx/config:/openedx/config:ro
+        {%- for mount in iter_mounts(MOUNTS, "openedx", "lms-job") %}
+        - {{ mount }}
+        {%- endfor %}
+      depends_on: {{ [("mysql", RUN_MYSQL), ("mongodb", RUN_MONGODB), ("meilisearch", RUN_MEILISEARCH)]|list_if }}
+
+    cms-job:
+      image: {{ DOCKER_IMAGE_OPENEDX }}
+      environment:
+        SERVICE_VARIANT: cms
+        DJANGO_SETTINGS_MODULE: cms.envs.tutor.production
+      volumes:
+        - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
+        - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
+        - ../apps/openedx/config:/openedx/config:ro
+        {%- for mount in iter_mounts(MOUNTS, "openedx", "cms-job") %}
+        - {{ mount }}
+        {%- endfor %}
+      depends_on: {{ [("mysql", RUN_MYSQL), ("mongodb", RUN_MONGODB), ("meilisearch", RUN_MEILISEARCH), ("redis", RUN_REDIS)]|list_if }}
+
+    {{ patch("local-docker-compose-jobs-services")|indent(4) }}

@@ -1,0 +1,2 @@
+{% if CAIRN_RUN_CLICKHOUSE %}setowner 1000 /data/cairn-clickhouse{% endif %}
+{% if CAIRN_RUN_POSTGRESQL %}setowner 70 /data/cairn-postgresql{% endif %}
