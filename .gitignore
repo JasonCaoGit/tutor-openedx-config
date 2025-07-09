@@ -6,3 +6,4 @@ data/
 # Ignore plugins cache
 tutor-plugins/__pycache__/
 .DS_Store
+tutor-config-vanilla
