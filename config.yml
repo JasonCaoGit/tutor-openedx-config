@@ -61,13 +61,18 @@ LMS_HOST: local.openedx.io
 MEILISEARCH_API_KEY: 025184ffa2d8e13b26b14d70b407e4dab0b5d9ad5c8e0772049358fe4f45360d
 MEILISEARCH_API_KEY_UID: 2b18ba76-66f7-4dec-a6b3-f2d7faab6881
 MEILISEARCH_MASTER_KEY: WWExBoOp24qz2OlNiOmr1A0M
+MOUNTS:
+- /Users/jasoncao/Desktop/IBM/tutor/sn-edx-middleware
 MYSQL_ROOT_PASSWORD: CAPlVi1R
+OPENEDX_EXTRA_PIP_REQUIREMENTS:
+- sn-edx-middleware
 OPENEDX_MYSQL_PASSWORD: keidf5Yy
 OPENEDX_SECRET_KEY: nqhL4uaoPazhVi5J3mzdBaeU
 PLATFORM_NAME: My Open edX
 PLUGINS:
-- mfe
+- add_sn_djangoapp_plugins
 - indigo
+- mfe
 PLUGIN_INDEXES:
 - https://overhang.io/tutor/main
 - https://overhang.io/tutor/contrib

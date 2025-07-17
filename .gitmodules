@@ -1,0 +1,3 @@
+[submodule "env/build/openedx/requirements/git-reqs/sn-edx-middleware"]
+	path = env/build/openedx/requirements/git-reqs/sn-edx-middleware
+	url = git@github.com:ibm-skills-network/sn-edx-middleware.git
