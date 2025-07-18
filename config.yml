@@ -1,5 +1,3 @@
-CMS_EXTRA_MIDDLEWARE:
-- sn_edx_middleware.middleware.SkillsNetworkEdxMiddleware
 CMS_HOST: studio.local.openedx.io
 CMS_OAUTH2_SECRET: NJ0c8OiEMLSvvFYEsTsjHFJq
 CONTACT_EMAIL: contact@local.openedx.io
