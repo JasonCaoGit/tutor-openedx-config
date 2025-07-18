@@ -106,9 +106,6 @@ RUN --mount=type=cache,target=/openedx/.cache/pip,sharing=shared \
 RUN pip install "openedx-scorm-xblock>=19.0.0,<20.0.0"
 
 
-            COPY --chown=app:app ./requirements/git-reqs/sn-edx-middleware /mnt/sn-edx-middleware
-            RUN pip install -e /mnt/sn-edx-middleware
-            
 
 
 RUN --mount=type=cache,target=/openedx/.cache/pip,sharing=shared \

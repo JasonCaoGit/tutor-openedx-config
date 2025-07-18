@@ -46,6 +46,8 @@ services:
       - ../../data/lms:/openedx/data
       - ../../data/openedx-media:/openedx/media
       - ../../data/openedx-media-private:/openedx/media-private
+      - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
+      - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
     depends_on:
       - lms
 
@@ -73,6 +75,8 @@ services:
       - ../../data/cms:/openedx/data
       - ../../data/openedx-media:/openedx/media
       - ../../data/openedx-media-private:/openedx/media-private
+      - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
+      - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
     depends_on:
       - cms
 
