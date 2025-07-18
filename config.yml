@@ -1,3 +1,5 @@
+CMS_EXTRA_MIDDLEWARE:
+- sn_edx_middleware.middleware.SkillsNetworkEdxMiddleware
 CMS_HOST: studio.local.openedx.io
 CMS_OAUTH2_SECRET: NJ0c8OiEMLSvvFYEsTsjHFJq
 CONTACT_EMAIL: contact@local.openedx.io
@@ -62,7 +64,7 @@ MEILISEARCH_API_KEY: 025184ffa2d8e13b26b14d70b407e4dab0b5d9ad5c8e0772049358fe4f4
 MEILISEARCH_API_KEY_UID: 2b18ba76-66f7-4dec-a6b3-f2d7faab6881
 MEILISEARCH_MASTER_KEY: WWExBoOp24qz2OlNiOmr1A0M
 MOUNTS:
-- /Users/jasoncao/Desktop/IBM/tutor/sn-edx-middleware
+- /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware
 MYSQL_ROOT_PASSWORD: CAPlVi1R
 OPENEDX_EXTRA_PIP_REQUIREMENTS:
 - sn-edx-middleware
@@ -70,7 +72,8 @@ OPENEDX_MYSQL_PASSWORD: keidf5Yy
 OPENEDX_SECRET_KEY: nqhL4uaoPazhVi5J3mzdBaeU
 PLATFORM_NAME: My Open edX
 PLUGINS:
-- add_sn_djangoapp_plugins
+- add_all_git_plugins
+- add_sn_middleware
 - indigo
 - mfe
 PLUGIN_INDEXES:
