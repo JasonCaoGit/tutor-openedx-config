@@ -59,6 +59,10 @@ COPY --from=code /openedx/edx-platform /
 
 
 
+FROM scratch AS mnt-edx-user-account-api
+
+FROM scratch AS mnt-sn-edx-middleware
+
 
 ###### Install python requirements in virtualenv
 FROM python AS python-requirements
@@ -174,6 +178,12 @@ WORKDIR /openedx/edx-platform
 
 
 
+COPY --link --chown=$APP_USER_ID:$APP_USER_ID --from=mnt-edx-user-account-api / /mnt/edx-user-account-api
+RUN pip install -e "/mnt/edx-user-account-api"
+
+COPY --link --chown=$APP_USER_ID:$APP_USER_ID --from=mnt-sn-edx-middleware / /mnt/sn-edx-middleware
+RUN pip install -e "/mnt/sn-edx-middleware"
+
 
 # We install edx-platform here because it creates an egg-info folder in the current
 # repo. We need both the source code and the virtualenv to run this command.
@@ -265,6 +275,12 @@ RUN --mount=type=cache,target=/openedx/.cache/pip,sharing=shared \
     pip install ipdb==0.13.13 ipython==8.24.0
 
 
+
+COPY --link --chown=$APP_USER_ID:$APP_USER_ID --from=mnt-edx-user-account-api / /mnt/edx-user-account-api
+RUN pip install -e "/mnt/edx-user-account-api"
+
+COPY --link --chown=$APP_USER_ID:$APP_USER_ID --from=mnt-sn-edx-middleware / /mnt/sn-edx-middleware
+RUN pip install -e "/mnt/sn-edx-middleware"
 
 
 # Add ipdb as default PYTHONBREAKPOINT

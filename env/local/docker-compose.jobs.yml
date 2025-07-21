@@ -26,7 +26,7 @@ services:
         - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
         - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
         - ../apps/openedx/config:/openedx/config:ro
-        - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
+        - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/edx-user-account-api:/mnt/edx-user-account-api
         - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
       depends_on: ["mysql", "mongodb", "meilisearch"]
 
@@ -39,7 +39,7 @@ services:
         - ../apps/openedx/settings/lms:/openedx/edx-platform/lms/envs/tutor:ro
         - ../apps/openedx/settings/cms:/openedx/edx-platform/cms/envs/tutor:ro
         - ../apps/openedx/config:/openedx/config:ro
-        - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
+        - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/edx-user-account-api:/mnt/edx-user-account-api
         - /Users/jasoncao/Desktop/IBM/tutor/tutor-openedx-config/env/build/openedx/requirements/git-reqs/sn-edx-middleware:/mnt/sn-edx-middleware
       depends_on: ["mysql", "mongodb", "meilisearch", "redis"]
 
