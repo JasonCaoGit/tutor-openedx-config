@@ -45,3 +45,69 @@ To get started with the development environment:
    tutor dev launch
    ```
 
+
+# How to Add Middleware (Hot-Reloaded)
+
+This guide will help you add new middleware to your Open edX development environment. All middleware placed in `env/build/openedx/requirements/git-reqs/` will be hot-reloaded automatically inside your Tutor containers.
+
+## Step 1: Add the Middleware as a Git Submodule
+
+First, add your middleware repository as a submodule inside the `git-reqs` directory. This keeps your dependencies organized and up-to-date.
+
+```bash
+# Example: Add the sn-edx-middleware repo as a submodule
+cd env/build/openedx/requirements/git-reqs
+
+git submodule add https://github.com/ibm-skills-network/<your-repo>.git
+
+# You can repeat this for any other middleware you want to add
+```
+
+## Step 2: Load Environment Variables
+
+Before running any Tutor commands, make sure your environment variables are loaded:
+
+```bash
+source .env
+```
+
+## Step 3: Enable the Middleware Mounting Plugin
+
+Enable the plugin that will automatically mount all middleware folders for you, because our plugins are custom, we need add it to MOUNTED_DIRECTORIES explicitly:
+
+```bash
+tutor plugins enable add_all_middlewares.py
+```
+
+This plugin will ensure that every folder in `git-reqs` is recognized and mounted by Tutor, when we run git mounts add <path-to-custom-middleware>.
+
+## Step 4: Mount All Middleware Folders
+
+Run the provided script to add all middleware folders as Tutor mounts:
+
+```bash
+scripts/mount_all_middlewares.sh
+```
+
+This script will:
+- Loop through every folder in `git-reqs`
+- Add each as a mount using Tutor
+
+## Step 5: Launch Tutor in Development Mode
+
+Start your Tutor environment in development mode:
+
+```bash
+tutor dev launch
+```
+
+## Result: Hot Reloading
+
+All files in `env/build/openedx/requirements/git-reqs/` will now be hot-loaded into your Tutor containers. Don't need to re-build the image. Any changes you make will be instantly reflected inside the running Open edX environment.
+
+---
+
+**Tip:**
+- If you add new middleware folders later, just repeat steps 1 and 4.
+- You can check which folders are mounted with `tutor mounts list`.
+
