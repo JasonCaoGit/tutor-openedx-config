@@ -25,13 +25,23 @@ To get started with the development environment:
 
 ## Development Environment Setup
 
-1. **Load environment variables**
+1. **Clone the repository with submodules**
+
+   > **Important:** This project uses git submodules. To ensure all dependencies are present, clone with the `--recursive` flag:
+   >
+   > ```bash
+   > git clone --recursive <repository-url-to-this-repo>
+   > ```
+
+
+
+2. **Load environment variables**
 
    ```bash
    source .env
    ```
 
-2. **Install Tutor**
+3. **Install Tutor**
 
    Make sure you have Python and pip installed, then run:
 
@@ -39,7 +49,7 @@ To get started with the development environment:
    pip install tutor
    ```
 
-3. **Start Tutor in development mode**
+4. **Start Tutor in development mode**
 
    ```bash
    tutor dev launch
